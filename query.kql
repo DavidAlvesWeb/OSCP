@@ -1,0 +1,10 @@
+DeviceProcessEvents
+| where FileName == "mshta.exe"
+| where ProcessCommandLine has_any (
+    "http",
+    "https",
+    ".hta",
+    "vbscript:",
+    "javascript:"
+)
+| project Timestamp, DeviceName, AccountName, FileName, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine, ReportId
